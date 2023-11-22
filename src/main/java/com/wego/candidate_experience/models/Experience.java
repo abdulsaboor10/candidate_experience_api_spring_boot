@@ -1,4 +1,4 @@
-package com.wego.customer_experience.models;
+package com.wego.candidate_experience.models;
 
 import java.time.LocalDate;
 import jakarta.persistence.Entity;
@@ -20,7 +20,7 @@ public class Experience {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private Candidate customer;
 
     public Experience() {
     }
@@ -65,11 +65,11 @@ public class Experience {
         this.end_date = end_date;
     }
 
-    public Customer getCustomer() {
+    public Candidate getCustomer() {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
+    public void setCustomer(Candidate customer) {
         this.customer = customer;
     }
 

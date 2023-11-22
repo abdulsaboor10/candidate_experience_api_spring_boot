@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.wego</groupId>
-	<artifactId>customer_experience</artifactId>
+	<artifactId>candidate_experience</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>customer_experience</name>
 	<description>Demo project for Spring Boot</description>

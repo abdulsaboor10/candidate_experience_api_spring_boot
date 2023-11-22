@@ -1,4 +1,4 @@
-package com.wego.customer_experience.models;
+package com.wego.candidate_experience.models;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -11,12 +11,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class Customer {
+public class Candidate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id; 
 
-    public Customer() {
+    public Candidate() {
     }
 
     private String name;
