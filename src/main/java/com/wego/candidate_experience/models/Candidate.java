@@ -4,65 +4,39 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Candidate {
+    
+    // @JsonProperty("identifier") //will be seen as identifier in json data
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id; 
-
-    public Candidate() {
-    }
+    private int id;
 
     private String name;
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
-    public int getPhoneNo() {
-        return phoneNo;
-    }
-
-    public void setPhoneNo(int phoneNo) {
-        this.phoneNo = phoneNo;
-    }
-
-    public Set<Experience> getExperiences() {
-        return experiences;
-    }
-
-    public void setExperiences(Set<Experience> experiences) {
-        this.experiences = experiences;
-    }
-
     private LocalDate dob;
-    private int phoneNo;
+    private String phoneNo;
     
-    @OneToMany(mappedBy = "customer")
+    @JsonIgnore
+    @OneToMany(mappedBy = "candidate" , cascade = {CascadeType.ALL})
     private Set<Experience> experiences = new HashSet<>();
+
+
+
 }

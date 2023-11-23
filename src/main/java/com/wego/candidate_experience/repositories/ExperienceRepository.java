@@ -7,5 +7,5 @@ import com.wego.candidate_experience.models.Experience;
 import java.util.List;
 
 public interface ExperienceRepository extends JpaRepository<Experience,Integer> {
-    List<Experience> findAllByCustomerId(int experienceId);
+    List<Experience> findAllByCandidateId(int candidateId);
 }

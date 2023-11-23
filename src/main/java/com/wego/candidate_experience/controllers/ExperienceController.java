@@ -1,7 +1,6 @@
 package com.wego.candidate_experience.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,23 +15,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wego.candidate_experience.models.Candidate;
 import com.wego.candidate_experience.models.Experience;
-import com.wego.candidate_experience.repositories.CandidateRepository;
-import com.wego.candidate_experience.repositories.ExperienceRepository;
+import com.wego.candidate_experience.services.CandidateService;
+import com.wego.candidate_experience.services.ExperienceService;
 
 @RestController
 @RequestMapping("experience")
 public class ExperienceController {
 
     @Autowired
-    ExperienceRepository _experienceRepo;
+    ExperienceService experienceService;
 
     @Autowired
-    CandidateRepository _customerRepo;
+    CandidateService candidateService;
 
     @GetMapping("")
-    public ResponseEntity<List<Experience>> getAllExperiences() {
+    public ResponseEntity<List<Experience>> getAll() {
         try {
-            List<Experience> experiences = _experienceRepo.findAll();
+            List<Experience> experiences = experienceService.getAllExperiences();
 
             return new ResponseEntity<>(experiences, HttpStatus.OK);
 
@@ -41,13 +40,12 @@ public class ExperienceController {
         }
     }
 
-
     @GetMapping("/{id}")
-    public ResponseEntity<Experience> getExperience(@PathVariable int id) {
+    public ResponseEntity<Experience> get(@PathVariable int id) {
         try {
-            Optional<Experience> experience = _experienceRepo.findById(id);
-            if (experience.isPresent()) {
-                return new ResponseEntity<>(experience.get(), HttpStatus.OK);
+            Experience experience = experienceService.getExperience(id);
+            if (experience != null) {
+                return new ResponseEntity<>(experience , HttpStatus.OK);
             } else
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
@@ -56,29 +54,28 @@ public class ExperienceController {
         }
     }
 
-    @PostMapping("")
-    public ResponseEntity<Experience> createNewExperience(@RequestBody Experience _experience) {
+    @PostMapping("/{candidateId}")
+    public ResponseEntity<Experience> post(@PathVariable int candidateId , @RequestBody Experience _experience) {
         try {
-            Experience exp = _experienceRepo.save(_experience);
-            return new ResponseEntity<>(exp, HttpStatus.OK);
+
+            Candidate candidate = candidateService.getCandidate(candidateId);
+            if (candidate == null){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            Experience experience = experienceService.createExperience(candidateId, _experience);
+            return new ResponseEntity<>(experience, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Experience> updateCustomer(@PathVariable int id, @RequestBody Experience _experience) {
+    public ResponseEntity<Experience> put(@PathVariable int id, @RequestBody Experience _experience) {
         try {
-            Experience experience = _experienceRepo.findById(id).orElse(null);
-            if (experience == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            experience.setCompany_name(_experience.getCompany_name());
-            experience.setTitle(_experience.getTitle());
-            experience.setStart_date(_experience.getStart_date());
-            experience.setEnd_date(_experience.getEnd_date());
+            Experience experience = experienceService.updateExperience(id, _experience);
 
-            return new ResponseEntity<>(_experienceRepo.save(_experience), HttpStatus.OK);
+            return new ResponseEntity<>(experience, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

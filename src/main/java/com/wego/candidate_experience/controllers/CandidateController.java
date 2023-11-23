@@ -1,7 +1,6 @@
 package com.wego.candidate_experience.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,25 +14,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wego.candidate_experience.models.*;
-import com.wego.candidate_experience.repositories.CandidateRepository;
-import com.wego.candidate_experience.repositories.ExperienceRepository;
+import com.wego.candidate_experience.services.CandidateService;
+import com.wego.candidate_experience.services.ExperienceService;
 
 @RestController
-@RequestMapping("/customer")
+@RequestMapping("/candidate")
 public class CandidateController {
 
     @Autowired
-    CandidateRepository _customerRepo;
+    CandidateService candidateService;
 
     @Autowired
-    ExperienceRepository _experienceRepo;
+    ExperienceService experienceService;
 
     @GetMapping("")
-    public ResponseEntity<List<Candidate>> getAllCustomers() {
+    public ResponseEntity<List<Candidate>> getAll() {
         try {
-            List<Candidate> customers = _customerRepo.findAll();
+            List<Candidate> candidates = candidateService.getAllCandidates();
 
-            return new ResponseEntity<>(customers, HttpStatus.OK);
+            return new ResponseEntity<>(candidates, HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -41,11 +40,11 @@ public class CandidateController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Candidate> getCustomer(@PathVariable int id) {
+    public ResponseEntity<Candidate> get(@PathVariable int id) {
         try {
-            Optional<Candidate> customer = _customerRepo.findById(id);
-            if (customer.isPresent()) {
-                return new ResponseEntity<>(customer.get(), HttpStatus.OK);
+            Candidate candidate = candidateService.getCandidate(id);
+            if (candidate != null) {
+                return new ResponseEntity<>(candidate, HttpStatus.OK);
             } else
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
@@ -58,12 +57,7 @@ public class CandidateController {
     @GetMapping("/{id}/experiences")
     public ResponseEntity<List<Experience>> getExperiences(@PathVariable int id) {
         try {
-            Boolean customer_exists = _customerRepo.findById(id).isPresent();
-            if (!customer_exists) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-
-            List<Experience> experiences = _experienceRepo.findAllByCustomerId(id);
+            List<Experience> experiences = candidateService.getExperiences(id);
 
             return new ResponseEntity<>(experiences, HttpStatus.OK);
 
@@ -71,28 +65,21 @@ public class CandidateController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PostMapping("")
-    public ResponseEntity<Candidate> createNewCustomer(@RequestBody Candidate _customer) {
+    @PostMapping
+    public ResponseEntity<Candidate> post(@RequestBody Candidate _candidate) {
         try {
-            _customerRepo.save(_customer);
-            return new ResponseEntity<>(_customer, HttpStatus.OK);
+            candidateService.createCandidate(_candidate);
+            return new ResponseEntity<>(_candidate, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Candidate> updateCustomer(@PathVariable int id, @RequestBody Candidate _customer) {
+    public ResponseEntity<Candidate> put(@PathVariable int id, @RequestBody Candidate _candidate) {
         try {
-            Candidate customer = _customerRepo.findById(id).orElse(null);
-            if (customer == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            customer.setName(_customer.getName());
-            customer.setPhoneNo(_customer.getPhoneNo());
-            customer.setDob(_customer.getDob());
-
-            return new ResponseEntity<>(_customerRepo.save(_customer), HttpStatus.OK);
+            Candidate candidate = candidateService.updateCandidate(id, _candidate);
+            return new ResponseEntity<>(candidate, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
