@@ -2,16 +2,13 @@ package com.wego.candidate_experience.controllers;
 
 import java.util.List;
 
+import com.wego.candidate_experience.dto.CandidateDTO;
+import com.wego.candidate_experience.dto.ExperienceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.wego.candidate_experience.models.*;
 import com.wego.candidate_experience.services.CandidateService;
@@ -27,22 +24,43 @@ public class CandidateController {
     @Autowired
     ExperienceService experienceService;
 
-    @GetMapping("")
-    public ResponseEntity<List<Candidate>> getAll() {
-        try {
-            List<Candidate> candidates = candidateService.getAllCandidates();
 
-            return new ResponseEntity<>(candidates, HttpStatus.OK);
+    @GetMapping("")
+    public ResponseEntity<Page<?>> getAll(
+            @RequestParam(name = "sortBy",defaultValue = "id") String sortBy,
+            @RequestParam(name = "desc",defaultValue = "false") Boolean desc,
+            @RequestParam(name = "offset",defaultValue = "0") int offset,
+            @RequestParam(name = "pageSize",defaultValue = "10") int pageSize,
+            @RequestParam(name = "recentExperience",defaultValue = "false") Boolean recentExperience,
+            @RequestParam(name = "experience",defaultValue = "false") Boolean experience
+    ) {
+        try {
+
+            if (pageSize > 100){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            Page<?> candidates;
+            if (recentExperience){
+                candidates = candidateService.getCandidatesWithRecentExperience(sortBy,offset,pageSize,desc);
+
+            }else if (experience){
+                candidates = candidateService.getCandidatesWithExperience(sortBy,offset,pageSize,desc);
+            }
+            else{
+                candidates = candidateService.getAllCandidates(sortBy,offset,pageSize,desc);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(candidates);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Candidate> get(@PathVariable int id) {
+
+    @GetMapping(value = "/{id}",produces = "application/json")
+    public ResponseEntity<CandidateDTO> get(@PathVariable int id) {
         try {
-            Candidate candidate = candidateService.getCandidate(id);
+            CandidateDTO candidate = candidateService.getCandidate(id);
             if (candidate != null) {
                 return new ResponseEntity<>(candidate, HttpStatus.OK);
             } else
@@ -54,10 +72,12 @@ public class CandidateController {
     }
 
 
+
+
     @GetMapping("/{id}/experiences")
-    public ResponseEntity<List<Experience>> getExperiences(@PathVariable int id) {
+    public ResponseEntity<List<ExperienceDTO>> getExperiences(@PathVariable int id) {
         try {
-            List<Experience> experiences = candidateService.getExperiences(id);
+            List<ExperienceDTO> experiences = candidateService.getExperiences(id);
 
             return new ResponseEntity<>(experiences, HttpStatus.OK);
 

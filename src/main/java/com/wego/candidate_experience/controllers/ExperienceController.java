@@ -2,6 +2,8 @@ package com.wego.candidate_experience.controllers;
 
 import java.util.List;
 
+import com.wego.candidate_experience.dto.CandidateDTO;
+import com.wego.candidate_experience.dto.ExperienceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +31,9 @@ public class ExperienceController {
     CandidateService candidateService;
 
     @GetMapping("")
-    public ResponseEntity<List<Experience>> getAll() {
+    public ResponseEntity<List<ExperienceDTO>> getAll() {
         try {
-            List<Experience> experiences = experienceService.getAllExperiences();
+            List<ExperienceDTO> experiences = experienceService.getAllExperiences();
 
             return new ResponseEntity<>(experiences, HttpStatus.OK);
 
@@ -41,9 +43,9 @@ public class ExperienceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Experience> get(@PathVariable int id) {
+    public ResponseEntity<ExperienceDTO> get(@PathVariable int id) {
         try {
-            Experience experience = experienceService.getExperience(id);
+            ExperienceDTO experience = experienceService.getExperience(id);
             if (experience != null) {
                 return new ResponseEntity<>(experience , HttpStatus.OK);
             } else
@@ -58,7 +60,7 @@ public class ExperienceController {
     public ResponseEntity<Experience> post(@PathVariable int candidateId , @RequestBody Experience _experience) {
         try {
 
-            Candidate candidate = candidateService.getCandidate(candidateId);
+            CandidateDTO candidate = candidateService.getCandidate(candidateId);
             if (candidate == null){
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

@@ -1,7 +1,25 @@
 package com.wego.candidate_experience.services;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.wego.candidate_experience.dto.CandidateDTO;
+import com.wego.candidate_experience.dto.CandidateWithExperiencesDTO;
+import com.wego.candidate_experience.dto.CandidateWithRecentExperienceDTO;
+import com.wego.candidate_experience.dto.ExperienceDTO;
+import com.wego.candidate_experience.mapper.CandidateDTOMapper;
+import com.wego.candidate_experience.mapper.CandidateWithExperienceDTOMapper;
+import com.wego.candidate_experience.mapper.CandidateWithRecentExperienceDTOMapper;
+import com.wego.candidate_experience.mapper.ExperienceDTOMapper;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,22 +38,35 @@ public class CandidateService {
     @Autowired
     ExperienceRepository experienceRepo;
 
-    public List<Candidate> getAllCandidates() {
-        List<Candidate> candidates = candidateRepo.findAll();
-        return candidates;
+    @Autowired
+    CandidateDTOMapper candidateDTOMapper;
+
+    @Autowired
+    ExperienceDTOMapper experienceDTOMapper;
+
+    @Autowired
+    CandidateWithExperienceDTOMapper candidateWithExperiencesDTOMapper;
+
+    @Autowired
+    CandidateWithRecentExperienceDTOMapper candidateWithRecentExperienceDTOMapper;
+
+
+
+    public CandidateDTO getCandidate(int id) {
+        Optional<Candidate> candidate = candidateRepo.findById(id);
+        if (candidate.isPresent()){
+            return candidate.map(candidateDTOMapper).orElse(null);
+        }
+        return null;
     }
 
-    public Candidate getCandidate(int id) {
-        Candidate candidate = candidateRepo.findById(id).orElse(null);
-        return candidate;
-    }
-
-    public List<Experience> getExperiences(int candidateId) {
+    public List<ExperienceDTO> getExperiences(int candidateId) {
         Boolean candidate_exists = this.candidateExists(candidateId);
         if (!candidate_exists) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        List<Experience> experiences = experienceRepo.findAllByCandidateId(candidateId);
+        List<ExperienceDTO> experiences = experienceRepo.findAllByCandidateId(candidateId)
+                .stream().map(experienceDTOMapper).collect(Collectors.toList());
         return experiences;
     }
 
@@ -44,7 +75,7 @@ public class CandidateService {
     }
 
     public Candidate updateCandidate(int id,Candidate _candidate) {
-        Candidate candidate = this.getCandidate(id);
+        Candidate candidate = candidateRepo.findById(id).orElse(null);
         if (candidate == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -55,8 +86,24 @@ public class CandidateService {
         return candidateRepo.save(candidate);
     }
 
+    public Page<CandidateDTO> getAllCandidates(String sortBy, int offset, int pageSize , Boolean desc){
+        Sort sort = desc ?  Sort.by(Sort.Order.desc(sortBy)) : Sort.by(sortBy);
+        return candidateRepo.findAll(PageRequest.of(offset , pageSize).withSort(sort))
+                .map(candidateDTOMapper);
+    }
+
+    public Page<CandidateWithExperiencesDTO> getCandidatesWithExperience(String sortBy, int offset, int pageSize, Boolean desc){
+        Sort sort = desc ?  Sort.by(Sort.Order.desc(sortBy)) : Sort.by(sortBy);
+        return candidateRepo.findAllWithExperiences(PageRequest.of(offset , pageSize).withSort(sort)).map(candidateWithExperiencesDTOMapper);
+    }
+    public Page<Candidate> getCandidatesWithRecentExperience(String sortBy, int offset, int pageSize , Boolean desc){
+        Sort sort = desc ?  Sort.by(Sort.Order.desc(sortBy)) : Sort.by(sortBy);
+        return candidateRepo.findAllCandidatesWithRecentExperience(PageRequest.of(offset , pageSize).withSort(sort));
+    }
+
     public Boolean candidateExists(int id){
         return candidateRepo.existsById(id);
     }
+
 
 }

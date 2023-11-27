@@ -25,9 +25,9 @@ public class Experience {
     private int id;
 
     private String title;
-    private String company_name;
-    private LocalDate start_date;
-    private LocalDate end_date;
+    private String companyName;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     @JsonIgnore
     @ManyToOne

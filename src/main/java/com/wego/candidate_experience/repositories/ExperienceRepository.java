@@ -1,5 +1,6 @@
 package com.wego.candidate_experience.repositories;
 
+import com.wego.candidate_experience.dto.ExperienceDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.wego.candidate_experience.models.Experience;

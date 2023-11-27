@@ -1,6 +1,10 @@
 package com.wego.candidate_experience.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.wego.candidate_experience.dto.ExperienceDTO;
+import com.wego.candidate_experience.mapper.ExperienceDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,15 +25,17 @@ public class ExperienceService {
     @Autowired
     CandidateRepository candidateRepo;
 
-    public List<Experience> getAllExperiences() {
-        List<Experience> experiences = experienceRepo.findAll();
+    @Autowired
+    ExperienceDTOMapper experienceDTOMapper;
 
-        return experiences;
+    public List<ExperienceDTO> getAllExperiences() {
+        return experienceRepo.findAll().stream()
+                .map(experienceDTOMapper).collect(Collectors.toList());
+
     }
 
-    public Experience getExperience(@PathVariable int id) {
-        Experience experience = experienceRepo.findById(id).orElse(null);
-        return experience;
+    public ExperienceDTO getExperience(@PathVariable int id) {
+        return experienceRepo.findById(id).map(experienceDTOMapper).orElse(null);
     }
 
     public Experience createExperience(int candidateId, Experience experience) {
@@ -44,17 +50,17 @@ public class ExperienceService {
     }
 
     public Experience updateExperience(int id,Experience experienceData) {
-        Experience experience = this.getExperience(id);
+        Experience experience = experienceRepo.findById(id).orElse(null);
         if (experience == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        experience.setCompany_name(experienceData.getCompany_name() != null ? experienceData.getCompany_name()
-                : experience.getCompany_name());
+        experience.setCompanyName(experienceData.getCompanyName() != null ? experienceData.getCompanyName()
+                : experience.getCompanyName());
         experience.setTitle(experienceData.getTitle() != null ? experienceData.getTitle() : experience.getTitle());
-        experience.setStart_date(experienceData.getStart_date() != null ? experienceData.getStart_date()
-                : experience.getStart_date());
-        experience.setEnd_date(
-                experienceData.getEnd_date() != null ? experienceData.getEnd_date() : experience.getEnd_date());
+        experience.setStartDate(experienceData.getStartDate() != null ? experienceData.getStartDate()
+                : experience.getStartDate());
+        experience.setEndDate(
+                experienceData.getEndDate() != null ? experienceData.getEndDate() : experience.getEndDate());
 
         return experienceRepo.save(experience);
     }

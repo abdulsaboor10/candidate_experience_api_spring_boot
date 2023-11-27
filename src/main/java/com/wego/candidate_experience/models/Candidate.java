@@ -7,6 +7,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,11 +33,14 @@ public class Candidate {
     private String name;
     private LocalDate dob;
     private String phoneNo;
-    
-    @JsonIgnore
+
     @OneToMany(mappedBy = "candidate" , cascade = {CascadeType.ALL})
     private Set<Experience> experiences = new HashSet<>();
 
-
+    public Candidate(String name , LocalDate dob , String phoneNo){
+        this.dob = dob;
+        this.name = name;
+        this.phoneNo = phoneNo;
+    }
 
 }
