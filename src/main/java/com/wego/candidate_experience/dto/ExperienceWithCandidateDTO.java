@@ -16,5 +16,14 @@ public class ExperienceWithCandidateDTO {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    private Candidate candidate;
+    private CandidateDTO candidate;
+
+    public ExperienceWithCandidateDTO(int id, String title, String companyName, LocalDate startDate, LocalDate endDate, CandidateDTO candidate) {
+        this.id = id;
+        this.title = title;
+        this.companyName = companyName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.candidate = candidate;
+    }
 }

@@ -7,13 +7,7 @@ import com.wego.candidate_experience.dto.ExperienceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.wego.candidate_experience.models.Candidate;
 import com.wego.candidate_experience.models.Experience;
@@ -31,9 +25,16 @@ public class ExperienceController {
     CandidateService candidateService;
 
     @GetMapping("")
-    public ResponseEntity<List<ExperienceDTO>> getAll() {
+    public ResponseEntity<List<?>> getAll(
+            @RequestParam(name = "candidate" , defaultValue = "false") Boolean candidate
+    ) {
         try {
-            List<ExperienceDTO> experiences = experienceService.getAllExperiences();
+            List<?> experiences;
+            if (candidate){
+                experiences = experienceService.getAllExperiencesWithCandidate();
+            }else{
+                experiences = experienceService.getAllExperiences();
+            }
 
             return new ResponseEntity<>(experiences, HttpStatus.OK);
 

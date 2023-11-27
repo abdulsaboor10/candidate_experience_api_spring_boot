@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.wego.candidate_experience.dto.ExperienceDTO;
+import com.wego.candidate_experience.dto.ExperienceWithCandidateDTO;
 import com.wego.candidate_experience.mapper.ExperienceDTOMapper;
+import com.wego.candidate_experience.mapper.ExperienceWithCandidateDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,10 +30,16 @@ public class ExperienceService {
     @Autowired
     ExperienceDTOMapper experienceDTOMapper;
 
+    @Autowired
+    ExperienceWithCandidateDTOMapper experienceWithCandidateDTOMapper;
+
     public List<ExperienceDTO> getAllExperiences() {
         return experienceRepo.findAll().stream()
                 .map(experienceDTOMapper).collect(Collectors.toList());
-
+    }
+    public List<ExperienceWithCandidateDTO> getAllExperiencesWithCandidate() {
+        return experienceRepo.findAll().stream()
+                .map(experienceWithCandidateDTOMapper).collect(Collectors.toList());
     }
 
     public ExperienceDTO getExperience(@PathVariable int id) {
