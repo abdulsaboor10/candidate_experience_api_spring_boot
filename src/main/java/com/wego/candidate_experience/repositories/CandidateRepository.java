@@ -13,7 +13,7 @@ import java.util.List;
 public interface CandidateRepository extends JpaRepository<Candidate,Integer> {
     @Query("SELECT c FROM Candidate c LEFT JOIN FETCH c.experiences e " +
             "WHERE e.endDate = (SELECT MAX(e2.endDate) FROM Experience e2 WHERE e2.candidate = c) " +
-            "OR e.endDate IS NULL limit 1")
+            "OR e.endDate IS NULL")
     Page<Candidate> findAllCandidatesWithRecentExperience(Pageable pageable);
 
     @Query("SELECT c FROM Candidate c LEFT JOIN FETCH c.experiences e")
