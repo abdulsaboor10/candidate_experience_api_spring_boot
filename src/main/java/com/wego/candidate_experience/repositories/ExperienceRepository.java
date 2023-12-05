@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ExperienceRepository extends JpaRepository<Experience,Integer> {
-    List<Experience> findAllByCandidateId(int candidateId);
+    List<Experience> findAllByCandidateIdOrderByStartDateAsc(int candidateId);
 
     @Query("SELECT e FROM Experience e JOIN FETCH e.candidate")
     List<ExperienceWithCandidateDTO> findAllExperiencesWithCandidates();

@@ -5,7 +5,6 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 public class CandidateDTO {
     private int id;

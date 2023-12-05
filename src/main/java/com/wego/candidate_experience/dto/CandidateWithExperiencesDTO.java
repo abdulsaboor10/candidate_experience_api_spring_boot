@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CandidateWithExperiencesDTO {
     private int id;
 

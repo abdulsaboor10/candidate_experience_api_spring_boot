@@ -8,6 +8,7 @@ import com.wego.candidate_experience.dto.ExperienceWithCandidateDTO;
 import com.wego.candidate_experience.mapper.ExperienceDTOMapper;
 import com.wego.candidate_experience.mapper.ExperienceWithCandidateDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +35,7 @@ public class ExperienceService {
     ExperienceWithCandidateDTOMapper experienceWithCandidateDTOMapper;
 
     public List<ExperienceDTO> getAllExperiences() {
-        return experienceRepo.findAll().stream()
+        return experienceRepo.findAll(Sort.by(Sort.Direction.ASC, "startDate")).stream()
                 .map(experienceDTOMapper).collect(Collectors.toList());
     }
     public List<ExperienceWithCandidateDTO> getAllExperiencesWithCandidate() {

@@ -13,7 +13,7 @@ import com.wego.candidate_experience.models.Candidate;
 import com.wego.candidate_experience.models.Experience;
 import com.wego.candidate_experience.services.CandidateService;
 import com.wego.candidate_experience.services.ExperienceService;
-
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("experience")
 public class ExperienceController {
