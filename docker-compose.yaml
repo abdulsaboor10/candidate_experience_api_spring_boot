@@ -1,0 +1,32 @@
+services:
+  db:
+    ports:
+      - 5431:5432
+    container_name: candidate_db
+    image: postgres
+    environment:
+      - POSTGRES_DB=candidate_experience
+      - POSTGRES_USER=saboor
+      - POSTGRES_PASSWORD=saboor
+    volumes:
+      - candidate_experience:/var/lib/postgresql/data
+    restart: always
+
+  backend:
+    build: .
+    container_name: candidate_api
+    ports:
+      - 8090:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/candidate_experience
+      - SPRING_DATASOURCE_USERNAME=saboor
+      - SPRING_DATASOURCE_PASSWORD=saboor
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_OPEN_IN_VIEW=false
+
+    depends_on:
+      - db
+    restart: always
+volumes:
+  candidate_experience:

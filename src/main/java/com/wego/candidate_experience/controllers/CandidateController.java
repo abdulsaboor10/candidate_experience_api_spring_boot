@@ -131,7 +131,7 @@ public class CandidateController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<Candidate> post(@RequestBody Candidate _candidate) {
         try {
             candidateService.createCandidate(_candidate);
